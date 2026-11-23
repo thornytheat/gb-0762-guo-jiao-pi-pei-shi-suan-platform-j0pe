@@ -15,5 +15,10 @@ def clean():
 
 
 @pytest.fixture
+def reuse():
+    return load('reuse')
+
+
+@pytest.fixture
 def client(tmp_path):
     return create_app(tmp_path / 'archive').test_client()

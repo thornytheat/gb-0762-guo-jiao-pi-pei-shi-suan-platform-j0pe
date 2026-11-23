@@ -14,9 +14,12 @@ def sha(data):
     return hashlib.sha256(data).hexdigest()
 
 
-def manifest(material, results, start):
+def manifest(material, results, start, ledger=None):
     assay_digest = sha(material['assays'].encode())
-    settings = {'plan': material['plan'], 'proposal': material.get('proposal', {})}
+    settings = {'plan': material['plan'], 'proposal': material.get('proposal', {}),
+                'drums': material.get('drums', [])}
+    if ledger:
+        settings['ledger'] = dict(sorted(ledger.items()))
     handle = sha(canonical([REVISION, assay_digest, settings]))
     return {'batch_id': handle, 'rule': REVISION, 'assay_sha256': assay_digest, 'parameters': settings,
             'created_at': datetime.now(timezone.utc).isoformat(timespec='seconds'),

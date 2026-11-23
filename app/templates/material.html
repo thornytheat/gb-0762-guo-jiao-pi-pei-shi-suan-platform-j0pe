@@ -5,6 +5,7 @@
   <details id="trial-input" {% if mode == 'custom' %}open{% endif %}><summary>查看投料资料</summary>
     <div class="inputs">{% for key,label in fields.items() %}<label>{{ label }}<input name="{{ key }}" value="{{ form_plan.get(key, '') }}"></label>{% endfor %}
     <label class="wide">化验 CSV<textarea name="assays" rows="5">{{ form_assays }}</textarea></label>
-    <label class="wide">待验称量 JSON<textarea name="proposal" rows="2">{{ form_proposal }}</textarea></label></div>
+    <label class="wide">待验称量 JSON<textarea name="proposal" rows="2">{{ form_proposal }}</textarea></label>
+    <label class="wide">合桶复验 JSON<textarea name="drums" rows="3">{{ form_drums }}</textarea></label></div>
   </details>
 </form>

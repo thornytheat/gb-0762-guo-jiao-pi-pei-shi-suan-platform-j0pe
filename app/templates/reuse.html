@@ -1,0 +1,21 @@
+<section class="panel workstation">
+  <div class="bench-head"><h3>合桶回用判定</h3><span class="state {{ 'pass' if data.reuse.issuable_g else 'fail' }}">可领 {{ data.reuse.issuable_g }} g</span></div>
+  <dl class="kpis"><div><dt>合桶数</dt><dd>{{ data.reuse.drum_count }}</dd></div><div><dt>可回用桶</dt><dd>{{ data.reuse.counts.REUSABLE }}</dd></div><div><dt>原批到期</dt><dd>{{ data.reuse.counts.EXPIRED_SOURCE }}</dd></div><div><dt>复验不合格</dt><dd>{{ data.reuse.counts.REJECTED }}</dd></div><div><dt>不可核对</dt><dd>{{ data.reuse.counts.INVALID }}</dd></div><div><dt>可领干物 g</dt><dd>{{ data.reuse.drum_dry_g }}</dd></div></dl>
+  <div class="remaining"><div>合桶重 {{ data.reuse.drum_weight_g }} g</div><div class="meter" title="可领 {{ data.reuse.issuable_g }} g，卡住 {{ data.reuse.blocked_g }} g"><meter min="0" max="{{ data.reuse.drum_weight_g or 1 }}" value="{{ data.reuse.issuable_g }}"></meter></div><div>可领 {{ data.reuse.issuable_g }} g</div></div>
+  {% if not data.reuse.balanced %}<p class="fault" role="alert">合桶重量与来源转出不平，暂停回用。</p>{% endif %}
+</section>
+<section class="panel"><h3>整桶复验与来源</h3><div class="sheet"><table><thead><tr><th>合桶号</th><th>复验水分</th><th>复验 SAG</th><th>桶重 (g)</th><th>判定</th><th>可领 (g)</th><th>卡住 (g)</th><th>来源 → 原批</th></tr></thead><tbody>{% for drum in data.reuse.drums %}<tr data-status="{{ drum.status }}"><td>{{ drum.drum }}</td><td class="num">{{ drum.recheck.moisture_bp }}</td><td class="num">{{ drum.recheck.gel_msag }}</td><td class="num">{{ drum.weight_g }}</td><td>{{ drum.status }}</td><td class="num">{{ drum.issuable_g }}</td><td class="num">{{ drum.blocked_g }}</td><td>{% for source in drum.sources %}{{ source.lot }} {{ source.grams }} g（{{ source.expires or '—' }}/{{ source.status }}）{% if not loop.last %} · {% endif %}{% endfor %}{% if drum.issues %}<br>{{ drum.issues|join(' · ') }}{% endif %}</td></tr>{% else %}<tr><td colspan="8">没有合桶复验单。</td></tr>{% endfor %}</tbody></table></div></section>
+{% if stage == 'stock' %}
+<section class="panel"><h3>本单提料</h3>
+  <form class="issue" method="post">
+    <input type="hidden" name="sample" value="{{ mode }}">
+    {% if mode == 'custom' %}<input type="hidden" name="assays" value="{{ form_assays }}">
+    {% for key,label in fields.items() %}<input type="hidden" name="{{ key }}" value="{{ form_plan.get(key, '') }}">{% endfor %}
+    <input type="hidden" name="proposal" value="{{ form_proposal }}"><input type="hidden" name="drums" value="{{ form_drums }}">{% endif %}
+    {% for key,label in issue_fields.items() %}<label>{{ label }}<input name="{{ key }}" value="{{ issue_form.get(key, '') }}"></label>{% endfor %}
+    <button id="issue-commit">提交领用</button>
+  </form>
+  {% if issued %}<p role="status" class="{{ 'pass' if issued.ok else 'fail' }}">{% if issued.ok %}{{ '已领用' if issued.created else '已复用同单' }} {{ issued.issue.drum }} {{ issued.issue.grams }} g{% else %}{{ issued.error }}{% endif %}</p>{% endif %}
+</section>
+<section class="panel"><h3>领用对账</h3><div class="sheet"><table><thead><tr><th>提交单号</th><th>合桶号</th><th>领用 (g)</th><th>复验</th><th>原批追溯</th><th>建立时间 UTC</th></tr></thead><tbody>{% for row in ledger %}<tr><td>{{ row.key }}</td><td>{{ row.drum }}</td><td class="num">{{ row.grams }}</td><td>{{ row.verdict }}</td><td>{% for part in row.trace %}{{ part.lot }} {{ part.grams }} g{% if not loop.last %} · {% endif %}{% endfor %}</td><td>{{ row.created_at }}</td></tr>{% else %}<tr><td colspan="6">尚无回用领用。</td></tr>{% endfor %}</tbody></table></div></section>
+{% endif %}

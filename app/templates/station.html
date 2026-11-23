@@ -23,6 +23,7 @@
       {% if stage in ['batches','certificate'] %}{% include 'records.html' %}{% elif data %}
         {% if stage in ['assay','dry','formula'] %}{% include 'measure.html' %}{% endif %}
         {% if stage in ['blend','stock'] %}{% include 'scale.html' %}{% endif %}
+        {% if stage in ['reuse','stock'] %}{% include 'reuse.html' %}{% endif %}
         {% if data.assay.isolated %}<section class="panel"><details id="assay-notes"><summary>化验隔离 · {{ data.assay.isolated|length }} 行</summary><div class="sheet"><table><thead><tr><th>行号</th><th>原因</th><th>原值</th></tr></thead><tbody>{% for row in data.assay.isolated %}<tr><td>{{ row.line }}</td><td>{{ row.code }}</td><td>{{ row.raw|join(' · ') }}</td></tr>{% endfor %}</tbody></table></div></details></section>{% endif %}
       {% endif %}
     </main>

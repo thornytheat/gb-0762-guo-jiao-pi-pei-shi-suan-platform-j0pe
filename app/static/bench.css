@@ -32,6 +32,9 @@ tbody tr:nth-child(even) { background: #faf1e7; }
 tr[data-issued=True] td:first-child { border-left: 3px solid var(--accent); }
 .num { text-align: right; font-family: var(--font-num); }
 .checks { display: flex; flex-wrap: wrap; gap: 12px; padding: 10px var(--pad); }
+.issue { display: flex; flex-wrap: wrap; align-items: end; gap: 8px; padding: 0 var(--pad) 10px; }
+.issue label { display: grid; font-size: 12px; color: var(--ink-muted); }
+.issue input { padding: 6px; color: var(--ink); font: 13px var(--font-num); border: 1px solid var(--line-strong); background: var(--surface); }
 .pass { color: var(--ok); } .fail,.fault { color: var(--bad); }
 .digest { overflow-wrap: anywhere; font-family: var(--font-num); }
 .download { display: inline-block; margin: 6px var(--pad); }

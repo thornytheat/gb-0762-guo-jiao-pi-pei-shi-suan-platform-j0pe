@@ -6,7 +6,7 @@ def search(lots, plan):
     """Visit lot counts in ascending order, then older allocations in descending order."""
     step = plan['step_g']
     target = plan['target_g'] // step
-    capacities = [min(lot['stock_g'] // step, target) for lot in lots]
+    capacities = [min(lot.get('available_g', lot['stock_g']) // step, target) for lot in lots]
     coefficients = []
     for lot in lots:
         dry = step * (10_000 - lot['moisture_bp'])
